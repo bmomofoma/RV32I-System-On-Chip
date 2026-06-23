@@ -7,7 +7,7 @@ module alu_decoder (
 );
 
     always_comb begin
-        // Safe default: Fall back to non-destructive addition logic
+        // Safe default: addition logic
         aluControl = 4'b0100; 
 
         case (aluOp)
@@ -47,7 +47,7 @@ module alu_decoder (
             end
 
             default: begin
-                aluControl = 4'b0100; // Boundary catch-all
+                aluControl = 4'b0100; // catch-all
             end
         endcase
     end
