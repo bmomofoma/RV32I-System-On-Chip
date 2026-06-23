@@ -22,12 +22,12 @@ module branch_logic (
 
     always_comb begin
         case (funct3)
-            3'b000:  cond_met = zero;       // BEQ  (Branch Equal)
-            3'b001:  cond_met = ~zero;      // BNE  (Branch Not Equal)
-            3'b100:  cond_met = signed_lt;  // BLT  (Branch Less Than - Signed)
-            3'b101:  cond_met = ~signed_lt; // BGE  (Branch Greater or Equal - Signed)
-            3'b110:  cond_met = (src_a < src_b); // BLTU (Branch Less Than - Unsigned)
-            3'b111:  cond_met = (src_a >= src_b);// BGEU (Branch Greater or Equal - Unsigned)
+            3'b000:  cond_met = zero;       // BEQ  
+            3'b001:  cond_met = ~zero;      // BNE 
+            3'b100:  cond_met = signed_lt;  // BLT  
+            3'b101:  cond_met = ~signed_lt; // BGE  
+            3'b110:  cond_met = (src_a < src_b); // BLTU 
+            3'b111:  cond_met = (src_a >= src_b);// BGEU 
             default: cond_met = 1'b0;
         endcase
     end
