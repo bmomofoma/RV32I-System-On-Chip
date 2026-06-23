@@ -3,11 +3,9 @@
 module soc_top (
     input  logic clk,
     input  logic rst,      // Active-high reset for RISC-V core
-    
-    // Physical External Pins
     inout  wire  sda,
     output logic scl,
-    inout  wire  dht_pin   // NEW: DHT11 1-wire interface
+    inout  wire  dht_pin   
 );
 
     logic [31:0] cpu_pc;
@@ -38,10 +36,10 @@ module soc_top (
     assign ram_word_addr = cpu_addr[13:2]; 
     assign pc_word_addr  = cpu_pc[13:2];
 
-    // Port A: Instruction Fetch (Asynchronous)
+    // Instruction Fetch (Asynchronous)
     assign cpu_instr = sram_array[pc_word_addr];
 
-    // Port B: Data Memory Access
+    // Data Memory Access
     always_ff @(posedge clk) begin
         if (ram_we) begin
             sram_array[ram_word_addr] <= cpu_wdata;
