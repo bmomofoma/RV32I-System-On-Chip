@@ -2,21 +2,20 @@
 
 module dht11_core (
     input  logic        clk,          // 100MHz system clock
-    input  logic        rst_n,        // Active-low reset
-    input  logic        start_en,     // 1-cycle trigger pulse from CPU
+    input  logic        rst_n,      
+    input  logic        start_en,  
     
-    inout  wire         dht_pin,      // 1-wire bidirectional pin
+    inout  wire         dht_pin,     
     
     output logic [31:0] sensor_data,  // {Humidity[15:0], Temperature[15:0]}
-    output logic        data_valid,   // Goes high when checksum passes
-    output logic        busy          // High while transaction is active
+    output logic        data_valid,  
+    output logic        busy         
 );
 
     logic [6:0] tick_cnt;
     logic       us_tick;
     logic       timer_rst;
-    logic [15:0] us_counter; // Tracks microseconds elapsed in current state
-
+    logic [15:0] us_counter; 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             tick_cnt <= '0;
@@ -59,11 +58,11 @@ module dht11_core (
     
     logic [39:0] shift_reg;
     logic [5:0]  bit_count;
-    logic        drive_low; // Tri-state control
+    logic        drive_low; 
     logic        save_bit;
     logic        bit_val;
 
-    // Edge detection for the asynchronous DHT pin
+    // Edge detection 
     logic dht_sync_1, dht_sync_2;
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) {dht_sync_2, dht_sync_1} <= 2'b11;
@@ -72,7 +71,7 @@ module dht11_core (
     logic dht_falling_edge = (dht_sync_1 == 1'b0 && dht_sync_2 == 1'b1);
     logic dht_rising_edge  = (dht_sync_1 == 1'b1 && dht_sync_2 == 1'b0);
 
-    // State Register Update
+    // State Update
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) current_state <= IDLE;
         else        current_state <= next_state;
@@ -162,15 +161,14 @@ module dht11_core (
             shift_reg <= {shift_reg[38:0], bit_val};
             bit_count <= bit_count + 1'b1;
             
-            // On the final bit, compute checksum
             if (bit_count == 6'd39) begin
-                if ( (shift_reg[38:31] + shift_reg[30:23] + shift_reg[22:15] + {shift_reg[14:8], bit_val}) == shift_reg[38:31] /* simplified for illustration, real check uses lower 8 bits of sum */ ) begin
+                if ( (shift_reg[38:31] + shift_reg[30:23] + shift_reg[22:15] + {shift_reg[14:8], bit_val}) == shift_reg[38:31] ) begin
                 end
             end
         end
     end
 
-    // Real checksum validation (happens 1 cycle after last bit is saved)
+    // checksum validation
     logic [7:0] sum;
     assign sum = shift_reg[39:32] + shift_reg[31:24] + shift_reg[23:16] + shift_reg[15:8];
 
@@ -182,13 +180,11 @@ module dht11_core (
                 sensor_data <= shift_reg[39:8]; // Store {Hum_Int, Hum_Dec, Temp_Int, Temp_Dec}
                 data_valid  <= 1'b1;
             end
-            bit_count <= '0; // Reset for next read
+            bit_count <= '0; 
         end else if (start_en) begin
-            data_valid <= 1'b0; // Clear flag on new transaction
+            data_valid <= 1'b0; 
         end
     end
-
-    // Tri-state buffer control for the 1-wire pin
     assign dht_pin = drive_low ? 1'b0 : 1'bz;
     assign busy    = (current_state != IDLE);
 
