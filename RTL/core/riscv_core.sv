@@ -10,14 +10,14 @@ module riscv_core (
     output logic [31:0] alu_result,    
     output logic [31:0] write_data_mem,
     output logic        mem_write,     
-    output logic [31:0] pc             // Directly exposes current address to Instruction Memory
+    output logic [31:0] pc             //  exposes current address to Instruction Memory
 );
 
-    logic [31:0] pc_next;         // Target entering the PC register
-    logic [31:0] pc_plus_4;       // Output from the sequential step adder
-    logic [31:0] pc_target;       // Output from the branch target adder
+    logic [31:0] pc_next;       
+    logic [31:0] pc_plus_4;     
+    logic [31:0] pc_target;       
     logic        pc_src;     
-    logic        jump;     // Steering MUX control bit from branch gate
+    logic        jump;    
 
     // Control Unit Output Traces
     logic        branch;
@@ -62,10 +62,10 @@ module riscv_core (
     branch_logic u_branch_logic (
         .branch     (branch),
         .zero       (alu_zero),
-        .src_a      (src_a),          // Raw Operand A from the register file
-        .src_b      (reg_out_b),      // Raw Operand B from the register file (NOT the immediate mux!)
-        .alu_result (alu_result),     // The subtraction result from the ALU
-        .funct3     (instr[14:12]),   // The 3-bit branch condition identifier
+        .src_a      (src_a),        
+        .src_b      (reg_out_b),   
+        .alu_result (alu_result),    
+        .funct3     (instr[14:12]),  
         .pc_src     (pc_src)
     );
 
@@ -74,7 +74,7 @@ module riscv_core (
  main_control u_main_control (
         .op        (instr[6:0]),
         .branch    (branch),
-        .jump      (jump),               // <-- NEW CONNECTION
+        .jump      (jump),             
         .memRead   (mem_read),
         .memtoReg  (mem_to_reg),
         .aluOp     (alu_op),
