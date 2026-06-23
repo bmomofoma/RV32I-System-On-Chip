@@ -22,7 +22,7 @@ module alu_logic (
             4'b0100: result = a + b;                  
             4'b0101: result = a - b;                  
             
-            // Barrel Shifter Sub-Circuits (RISC-V restricts shift depth to lower 5 bits)
+            // Barrel Shifter Sub-Circuits
             4'b0110: result = a << b[4:0];            
             4'b0111: result = a >> b[4:0];            
             4'b1000: result = $signed(a) >>> b[4:0]; 
